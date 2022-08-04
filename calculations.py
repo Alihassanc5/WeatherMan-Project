@@ -1,5 +1,5 @@
 from calendar import month_name, month_abbr
-
+from contextlib import ExitStack
 
 def mode_e_parsing(header, reading):
     date_index = header.index('PKT')    
@@ -101,23 +101,28 @@ def display_bar_charts(weather_readings):
         print()
         
 
-def read_weathers(file_name, mode, weather_readings):
-    weather_file = open(file_name, 'r')    
-    readings = weather_file.readlines()
-    header = readings[0].split(',')
+def read_weathers(file_names, mode):
+    weather_readings = []
     
-    for reading in readings[1:]:
-        reading = reading.strip().split(',')
-        
-        if mode == '-e':
-            weather_reading = mode_e_parsing(header, reading)
-        elif mode == '-a':
-            weather_reading = mode_a_parsing(header, reading)
-        else:
-            weather_reading = mode_c_parsing(header, reading)    
+    with ExitStack() as stack:
+        for file_name in file_names:
+            file = stack.enter_context(open(file_name, 'r'))
+            readings = file.readlines()
+            header = readings[0].split(',')
+            
+            for reading in readings[1:]:
+                reading = reading.strip().split(',')
+                
+                if mode == '-e':
+                    weather_reading = mode_e_parsing(header, reading)
+                elif mode == '-a':
+                    weather_reading = mode_a_parsing(header, reading)
+                else:
+                    weather_reading = mode_c_parsing(header, reading)    
 
-        weather_readings.append(weather_reading)
-
+                weather_readings.append(weather_reading)
+    
+    return weather_readings
 
 def generate_report(mode, weather_readings):
     if mode == '-e':

@@ -15,22 +15,22 @@ def main():
                 year, month = list(map(int, sys.argv[index+1].split('/')))
             else:
                 year = int(sys.argv[index+1])
-
+            
+            file_names = []
             for file_name in listdir(path_to_files):
-                file_name = path.join(path_to_files,file_name)
+                file = path.join(path_to_files,file_name)
                 file_year = int(file_name.split('_')[2]) 
                 file_month = list(month_abbr).index(file_name.split('_')[3][:3])
             
-                if mode == '-e' and year == file_year:
-                    read_weathers(file_name, mode, weather_readings)
-                        
-                if mode == '-a' and year == file_year and month == file_month:
-                    read_weathers(file_name, mode, weather_readings)
+                if ((mode == '-a' and year == file_year and month == file_month) or
+                    (mode == '-c' and year == file_year and month == file_month) or
+                    (mode == '-e' and year == file_year)):
+                     file_names.append(file)
 
                 if mode == '-c' and year == file_year and month == file_month:
                     print(month_name[month], year)
-                    read_weathers(file_name, mode, weather_readings)
 
+            weather_readings = read_weathers(file_names, mode)
             generate_report(mode, weather_readings)             
     
     except Exception as e:

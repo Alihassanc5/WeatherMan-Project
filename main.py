@@ -22,14 +22,14 @@ def main():
                 file_month = list(month_abbr).index(file_name.split('_')[3][:3])
             
                 if mode == '-e' and year == file_year:
-                    read_weathers(file_name, weather_readings)
+                    read_weathers(file_name, mode, weather_readings)
                         
                 if mode == '-a' and year == file_year and month == file_month:
-                    read_weathers(file_name, weather_readings)
+                    read_weathers(file_name, mode, weather_readings)
 
                 if mode == '-c' and year == file_year and month == file_month:
                     print(month_name[month], year)
-                    read_weathers(file_name, weather_readings)
+                    read_weathers(file_name, mode, weather_readings)
 
             generate_report(mode, weather_readings)             
     

@@ -1,38 +1,38 @@
-from os import listdir, path
-import sys
+import argparse
 from calculations import *
-
+    
 
 def main():
-    path_to_files = sys.argv[1]
-    
     try:
-        for index in range(2, len(sys.argv), 2):            
-            weather_readings = []
-            mode = sys.argv[index]
-            
-            if mode == '-a' or mode== '-c':
-                year, month = list(map(int, sys.argv[index+1].split('/')))
-            else:
-                year = int(sys.argv[index+1])
-            
-            file_names = []
-            for file_name in listdir(path_to_files):
-                file = path.join(path_to_files,file_name)
-                file_year = int(file_name.split('_')[2]) 
-                file_month = list(month_abbr).index(file_name.split('_')[3][:3])
-            
-                if ((mode == '-a' and year == file_year and month == file_month) or
-                    (mode == '-c' and year == file_year and month == file_month) or
-                    (mode == '-e' and year == file_year)):
-                     file_names.append(file)
-
-                if mode == '-c' and year == file_year and month == file_month:
-                    print(month_name[month], year)
-
-            weather_readings = read_weathers(file_names, mode)
-            generate_report(mode, weather_readings)             
+        parser = argparse.ArgumentParser()
+        parser.add_argument("path_to_files", type = str, help = "Path of files")
+        parser.add_argument("-e", "--mode_e", default=[],type=int, action="append", help="To process file in E mode")
+        parser.add_argument("-a", "--mode_a", default=[], action="append", help="To process file in A mode")
+        parser.add_argument("-c", "--mode_c", default=[], action="append", help="To process file in C mode")
+        args = parser.parse_args()
     
+        for year in args.mode_e:            
+            file_names = []
+            for file_name in listdir(args.path_to_files):
+                file = path.join(args.path_to_files, file_name)
+                file_year = int(file_name.split('_')[2]) 
+                if year == file_year:
+                    file_names.append(file)
+
+            print(year)
+            weather_readings = read_weathers(file_names, "-e")
+            generate_report("-e", weather_readings)
+
+        for date in args.mode_a:
+            file_name = get_file_name(args.path_to_files, date)
+            weather_readings = read_weathers(file_name, "-a")
+            generate_report("-a", weather_readings)
+
+        for date in args.mode_c:
+            file_name = get_file_name(args.path_to_files, date)
+            weather_readings = read_weathers(file_name, "-c")
+            generate_report("-c", weather_readings)
+
     except Exception as e:
         print('Exception Occured!!!')
         print(e)

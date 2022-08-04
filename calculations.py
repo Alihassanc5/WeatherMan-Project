@@ -1,5 +1,43 @@
 from calendar import month_name, month_abbr
 from contextlib import ExitStack
+from os import listdir, path
+
+def get_file_name(path_to_files, date):
+    year, month = list(map(int, date.split('/')))
+    print(month_name[month], year)
+
+    for file_name in listdir(path_to_files):
+        file = path.join(path_to_files, file_name)
+        file_year = int(file_name.split('_')[2])
+        file_month = list(month_abbr).index(file_name.split('_')[3][:3])
+        
+        if year == file_year and month == file_month:
+            return [file]
+
+
+def read_weathers(file_names, mode):
+    weather_readings = []
+    
+    with ExitStack() as stack:
+        for file_name in file_names:
+            file = stack.enter_context(open(file_name, 'r'))
+            readings = file.readlines()
+            header = readings[0].split(',')
+            
+            for reading in readings[1:]:
+                reading = reading.strip().split(',')
+                
+                if mode == '-e':
+                    weather_reading = mode_e_parsing(header, reading)
+                elif mode == '-a':
+                    weather_reading = mode_a_parsing(header, reading)
+                else:
+                    weather_reading = mode_c_parsing(header, reading)    
+
+                weather_readings.append(weather_reading)
+    
+    return weather_readings
+
 
 def mode_e_parsing(header, reading):
     date_index = header.index('PKT')    
@@ -98,31 +136,8 @@ def display_bar_charts(weather_readings):
         
         if lowest_temperature != -1 and highest_temperature != -1:
            print(f"{lowest_temperature:2d}C - {highest_temperature:2d}C",end = '')
-        print()
-        
+        print()        
 
-def read_weathers(file_names, mode):
-    weather_readings = []
-    
-    with ExitStack() as stack:
-        for file_name in file_names:
-            file = stack.enter_context(open(file_name, 'r'))
-            readings = file.readlines()
-            header = readings[0].split(',')
-            
-            for reading in readings[1:]:
-                reading = reading.strip().split(',')
-                
-                if mode == '-e':
-                    weather_reading = mode_e_parsing(header, reading)
-                elif mode == '-a':
-                    weather_reading = mode_a_parsing(header, reading)
-                else:
-                    weather_reading = mode_c_parsing(header, reading)    
-
-                weather_readings.append(weather_reading)
-    
-    return weather_readings
 
 def generate_report(mode, weather_readings):
     if mode == '-e':

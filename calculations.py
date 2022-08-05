@@ -1,22 +1,22 @@
-from calendar import month_name, month_abbr
+from calendar import month_abbr, month_name
 from contextlib import ExitStack
-from os import listdir, path
+from csv import DictReader
+from os import path
 
-def get_file_name(path_to_files, date):
-    year, month = list(map(int, date.split('/')))
+def get_file_path(path_to_files, date):
+    year, month = date.split('/')
+    month = int(month)  
     print(month_name[month], year)
 
-    for file_name in listdir(path_to_files):
-        file = path.join(path_to_files, file_name)
-        file_year = int(file_name.split('_')[2])
-        file_month = list(month_abbr).index(file_name.split('_')[3][:3])
-        
-        if year == file_year and month == file_month:
-            return [file]
+    file_name = "Murree_weather_" + year + "_" + month_abbr[month] + ".txt"
+ 
+    if path.exists(path_to_files):
+        file_path = path.join(path_to_files, file_name)
+        return file_path
 
 
-def read_weathers(file_names, mode):
-    weather_readings = []
+def weather_readings(file_names, mode):
+    readings = []
     
     with ExitStack() as stack:
         for file_name in file_names:
@@ -34,9 +34,9 @@ def read_weathers(file_names, mode):
                 else:
                     weather_reading = mode_c_parsing(header, reading)    
 
-                weather_readings.append(weather_reading)
+                readings.append(weather_reading)
     
-    return weather_readings
+    return readings
 
 
 def mode_e_parsing(header, reading):

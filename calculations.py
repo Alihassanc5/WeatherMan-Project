@@ -67,17 +67,10 @@ def display_bar_charts(weather_readings):
 
 def generate_report(weather_readings, mode):
     if mode == '-e':
-        lowest_temp_weather = highest_temp_weather = most_humid_weather = weather_readings[0]
-
-        for weather_reading in weather_readings[1:]:
-            if weather_reading['Max TemperatureC'] > highest_temp_weather['Max TemperatureC'] and weather_reading['Max TemperatureC'] != -1:
-                highest_temp_weather = weather_reading
-
-            if weather_reading['Min TemperatureC'] < lowest_temp_weather['Min TemperatureC'] and weather_reading['Min TemperatureC'] != -1:
-                lowest_temp_weather = weather_reading
-
-            if weather_reading['Max Humidity'] > most_humid_weather['Max Humidity'] and weather_reading['Max Humidity'] != -1:
-                most_humid_weather = weather_reading
+        filtered_readings = list(filter(lambda reading: reading['Min TemperatureC'] != -1, weather_readings))
+        lowest_temp_weather = min(filtered_readings, key = lambda reading: reading['Min TemperatureC'])
+        highest_temp_weather = max(filtered_readings, key = lambda reading: reading['Max TemperatureC'])
+        most_humid_weather = max(filtered_readings, key = lambda reading: reading['Max Humidity'])
 
         print(f"Highest: {highest_temp_weather['Max TemperatureC']}C on {month_name[highest_temp_weather['date']['Month']]} {highest_temp_weather['date']['Day']}")
         print(f"Lowest: {lowest_temp_weather['Min TemperatureC']}C on {month_name[lowest_temp_weather['date']['Month']]} {lowest_temp_weather['date']['Day']}")

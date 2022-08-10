@@ -12,14 +12,14 @@ def main():
         parser.add_argument("-c", "--mode_c", default=[], action="append", help="To process file in C mode")
         args = parser.parse_args()
 
-        modes = {"-e": args.mode_e, "-a": args.mode_a, "-c": args.mode_c} 
+        operations = {"yearly operations": args.mode_e, "monthly operations": args.mode_a, "monthly bar charts": args.mode_c} 
         
-        for mode, dates in modes.items():
+        for operation, dates in operations.items():
             for date in dates:
                 file_names = []
                 file_paths = []
 
-                if mode =='-a' or mode=='-c':
+                if operation == 'monthly operations' or operation == 'monthly bar charts':
                     year, month = date.split('/')
                     month = int(month)
                     print(month_name[month], year)
@@ -36,8 +36,8 @@ def main():
                     if path.exists(args.path_to_files):
                         file_paths.append(file_path)
 
-                readings = weather_readings(file_paths, mode)
-                generate_report(readings, mode)
+                readings = weather_readings(file_paths, operation)
+                generate_report(readings, operation)
 
     except Exception as e:
         print('Exception Occured!!!')

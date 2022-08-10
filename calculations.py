@@ -16,20 +16,20 @@ def weather_readings(files, mode):
     return readings
 
 
-def parse_reading(reading, mode):
+def parse_reading(reading, operation):
     max_temperature = -1 if reading['Max TemperatureC'] == '' else int(reading['Max TemperatureC'])
     min_temperature = -1 if reading['Min TemperatureC'] == '' else int(reading['Min TemperatureC'])
 
     weather_reading = {'Max TemperatureC': max_temperature, 'Min TemperatureC': min_temperature}
     
-    if mode =='-e':
+    if operation == 'yearly operations':
         timezone = 'PKT' if 'PKT' in reading else 'PKST'
         date = list(map(int,reading[timezone].split('-')))
         max_humidity = -1 if reading['Max Humidity'] == '' else int(reading['Max Humidity'])
         weather_reading['date'] = {'Month': date[1], 'Day': date[2]}
         weather_reading['Max Humidity'] = max_humidity
     
-    if mode == '-a':
+    if operation == 'monthly operations':
         mean_humidity = -1 if reading['Mean Humidity'] == '' else int(reading['Mean Humidity'])
         weather_reading['Mean Humidity'] = mean_humidity
 
@@ -65,8 +65,8 @@ def display_bar_charts(weather_readings):
         print()        
 
 
-def generate_report(weather_readings, mode):
-    if mode == '-e':
+def generate_report(weather_readings, operation):
+    if operation == 'yearly operations':
         filtered_readings = list(filter(lambda reading: reading['Min TemperatureC'] != -1, weather_readings))
         lowest_temp_weather = min(filtered_readings, key = lambda reading: reading['Min TemperatureC'])
         highest_temp_weather = max(filtered_readings, key = lambda reading: reading['Max TemperatureC'])
@@ -76,16 +76,16 @@ def generate_report(weather_readings, mode):
         print(f"Lowest: {lowest_temp_weather['Min TemperatureC']}C on {month_name[lowest_temp_weather['date']['Month']]} {lowest_temp_weather['date']['Day']}")
         print(f"Humidity: {most_humid_weather['Max Humidity']}% on {month_name[most_humid_weather['date']['Month']]} {most_humid_weather['date']['Day']}")
 
-    elif mode == '-a':
+    elif operation == 'monthly operations':
         highest_average, lowest_average, average_mean_humidity = calculate_mean_values(weather_readings)
         print(f"Highest Average: {highest_average:.2f}C")
         print(f"Lowest Average: {lowest_average:.2f}C".format())
         print(f"Average Mean Humidity: {average_mean_humidity:.2f}%")
 
-    elif mode == '-c':
+    elif operation == 'monthly bar charts':
         display_bar_charts(weather_readings)
 
     else:
-        raise Exception('Error in report generation!',mode,'is unknown mode.')
+        raise Exception('Error in report generation!',operation,'is unknown.')
 
     print('-' * 30, '\n')

@@ -1,7 +1,9 @@
 from os import path
 import argparse
 
-from calculations import *
+from weatherreader import read_weather_files
+from weatherparser import parse_weather_readings
+from weatherprinter import *
 
 
 def main():

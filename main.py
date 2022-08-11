@@ -1,9 +1,10 @@
 from os import path
 import argparse
 
-from weatherparser import parse_weather_readings
+from weathercalculator import Calculator
+from weatherparser import Parser
 from weatherprinter import *
-from weatherreader import read_weather_files
+from weatherreader import Reader
 
 
 def main():
@@ -19,10 +20,14 @@ def main():
                       "yearly operations": args.mode_e,
                       "monthly operations": args.mode_a,
                       "monthly bar charts": args.mode_c
-        }
+                     }
 
         for operation, dates in operations.items():
             for date in dates:
+                weather_reader = Reader()
+                weather_parser = Parser()
+                weather_calculator = Calculator()
+                weather_printer = Printer()
                 weather_file_names = []
                 weather_files = []
 
@@ -50,9 +55,17 @@ def main():
                     if path.exists(args.path_to_files):
                         weather_files.append(weather_file)
 
-                weather_readings = read_weather_files(weather_files)
-                parsed_weather_readings = parse_weather_readings(weather_readings)
-                generate_report(parsed_weather_readings, operation)
+                weather_reader.read_weather_files(weather_files)
+                weather_readings = weather_reader.get_weather_readings()
+                weather_parser.parse_weather_readings(weather_readings)
+                parsed_weather_readings = weather_parser.get_parsed_weather_readings()
+                weather_calculator.calculate_mean_values(parsed_weather_readings)
+                maen_values = weather_calculator.get_calculated_values()
+                weather_printer.print_report(
+                                             parsed_weather_readings,
+                                             maen_values,
+                                             operation
+                                            )
 
     except Exception as e:
         print('Exception Occured!!!')

@@ -7,27 +7,19 @@ class Printer():
 
     def __print_yearly_report(self, parsed_weather_readings):
         filtered_readings = list(
-                                    filter(
-                                        lambda reading:
-                                        reading['Min TemperatureC'] != -1,
-                                        parsed_weather_readings
-                                    )
-                                )
+            filter(
+                lambda reading: reading['Min TemperatureC'] != -1, parsed_weather_readings
+            )
+        )
         lowest_temp_weather = min(
-                                    filtered_readings,
-                                    key=lambda reading:
-                                    reading['Min TemperatureC']
-                                )
+            filtered_readings, key=lambda reading: reading['Min TemperatureC']
+        )
         highest_temp_weather = max(
-                                    filtered_readings,
-                                    key=lambda reading:
-                                    reading['Max TemperatureC']
-                                )
+            filtered_readings, key=lambda reading: reading['Max TemperatureC']
+        )
         most_humid_weather = max(
-                                filtered_readings,
-                                key=lambda reading:
-                                reading['Max Humidity']
-                                )
+            filtered_readings, key=lambda reading: reading['Max Humidity']
+        )
 
         print(
             f"Highest: {highest_temp_weather['Max TemperatureC']}C on"
@@ -51,8 +43,7 @@ class Printer():
         print(f"Average Mean Humidity: {mean_values['Average Mean Humidity']:.2f}%")
 
     def __print_bar_charts(self, parsed_weather_readings):
-        for day, weather_reading in enumerate(parsed_weather_readings,
-                                              start=1):
+        for day, weather_reading in enumerate(parsed_weather_readings, start=1):
             highest_temperature = weather_reading['Max TemperatureC']
             lowest_temperature = weather_reading['Min TemperatureC']
 
@@ -73,7 +64,6 @@ class Printer():
         elif operation == 'monthly bar charts':
             self.__print_bar_charts(parsed_weather_readings)
         else:
-            raise Exception('Error in report generation!',
-                            operation, 'is unknown.')
+            raise Exception('Error in report generation!', operation, 'is unknown.')
 
         print('-' * 30, '\n')

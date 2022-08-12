@@ -30,10 +30,9 @@ class Parser():
 
         return parsed_weather_reading
 
-    def parse_weather_readings(self, weather_readings):
+    def get_parsed_weather_readings(self, weather_readings):
         for weather_reading in weather_readings:
             parsed_weather_reading = self.__parse_weather_reading(weather_reading)
             self._parsed_weather_readings.append(parsed_weather_reading)
-
-    def get_parsed_weather_readings(self):
+        
         return self._parsed_weather_readings
